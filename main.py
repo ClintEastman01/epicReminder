@@ -1,27 +1,20 @@
 from requests_html import HTMLSession
-session = HTMLSession()
 
-# This is just a simple webscraper that grabs the free games currently available in the epic store
+URL = 'https://www.epicgames.com/store/en-US/free-games'
 
-url = 'https://www.epicgames.com/store/en-US/free-games'
 
-r = session.get(url)
-r.html.render(sleep=1, keep_page=True)
+def GetGames(url):  # returns a dictionary with the details
+    session = HTMLSession()
+    games_list = []
+    r = session.get(url)
+    r.html.render(sleep=1, keep_page=True)
+    details_of_free_games = r.html.find('div.css-1ukp34s')
+    for name in details_of_free_games:
+        split_lines = name.text.split('\n')
+        games_list.append(f'{split_lines[1]} {split_lines[2]}')
+        split_lines.clear()
+    return games_list
 
-def GetFreeGames():
-    bothFreeGames = r.html.xpath('//*[@id="dieselReactWrapper"]/div/div[4]/main/div[3]/div/div/div/div/div[2]/span/div/div/section/div')
-    # freeNow = r.html.xpath('//*[@id="dieselReactWrapper"]/div/div[4]/main/div[3]/div/div/div/div/div[2]/span/div/div/section/div/div[1]/div/div/a/div/div/div[3]/span[1]/div')
-    # freeNowEndDate = r.html.xpath('//*[@id="dieselReactWrapper"]/div/div[4]/main/div[3]/div/div/div/div/div[2]/span/div/div/section/div/div[1]/div/div/a/div/div/div[3]/span[2]/div')
-    # comingSoon = r.html.xpath('//*[@id="dieselReactWrapper"]/div/div[4]/main/div[3]/div/div/div/div/div[2]/span/div/div/section/div/div[2]/div/div/a/div/div/div[3]/span[1]/div')
-    # comingSoonDate = r.html.xpath('//*[@id="dieselReactWrapper"]/div/div[4]/main/div[3]/div/div/div/div/div[2]/span/div/div/section/div/div[2]/div/div/a/div/div/div[3]/span[2]/div')
-    # print(freeNow[0].text)
-    # print(freeNowEndDate[0].text)
-    # print()
-    # print(comingSoon[0].text)
-    # print(comingSoonDate[0].text)
 
-# Prints the same output just in a loop
-    for item in bothFreeGames:
-        print(item.text)
-
-GetFreeGames()
+for game in GetGames(URL):
+    print(game)
